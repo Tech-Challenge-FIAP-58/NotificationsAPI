@@ -1,7 +1,5 @@
-﻿using FCG.Notifications.Data;
-using FCG.Notifications.Domain.Configuration;
+﻿using FCG.Notifications.Domain.Configuration;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,8 +17,7 @@ namespace FCG.Notifications.Configuration
 
 		public static void RegisterServices(this HostApplicationBuilder builder)
 		{
-			builder.Services.AddDbContext<NotificationContext>(options =>
-				options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+			
 		}
 
 		public static void RegisterMassTransit(this HostApplicationBuilder builder)

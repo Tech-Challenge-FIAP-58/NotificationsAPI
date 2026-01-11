@@ -5,9 +5,10 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddHostedService<Worker>();
-
 builder.RegisterServices();
+builder.RegisterMassTransit();
+
+builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();
 

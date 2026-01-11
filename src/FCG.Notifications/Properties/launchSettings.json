@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FCG.Notifications": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

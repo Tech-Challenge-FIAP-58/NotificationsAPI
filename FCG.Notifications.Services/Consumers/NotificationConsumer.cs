@@ -2,7 +2,7 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace FCG.Notifications.Consumers
+namespace FCG.Notifications.Services.Consumers
 {
 	public class NotificationConsumer(ILogger<NotificationConsumer> logger) : IConsumer<Notification>
 	{

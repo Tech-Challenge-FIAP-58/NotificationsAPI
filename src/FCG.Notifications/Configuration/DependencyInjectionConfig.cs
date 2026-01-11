@@ -1,4 +1,5 @@
 ﻿using FCG.Notifications.Data;
+using FCG.Notifications.Domain.Configuration;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,12 @@ namespace FCG.Notifications.Configuration
 {
 	public static class DependencyInjectionConfig
 	{
+		public static void RegisterConfigurations(this HostApplicationBuilder builder)
+		{
+			var rabbitMqConfigSection = builder.Configuration.GetSection("RabbitMqSettings");
+			builder.Services.Configure<RabbitMqSettings>(rabbitMqConfigSection);
+		}
+
 		public static void RegisterServices(this HostApplicationBuilder builder)
 		{
 			builder.Services.AddDbContext<NotificationContext>(options =>
@@ -18,6 +25,9 @@ namespace FCG.Notifications.Configuration
 
 		public static void RegisterMassTransit(this HostApplicationBuilder builder)
 		{
+			var settings = builder.Configuration.GetSection("RabbitMqSettings").Get<RabbitMqSettings>() 
+				?? throw new NullReferenceException("RabbitMqSettings configuration section is missing or invalid.");
+
 			builder.Services.AddMassTransit(x =>
 			{
 				x.SetKebabCaseEndpointNameFormatter();
@@ -32,17 +42,13 @@ namespace FCG.Notifications.Configuration
 
 				x.UsingRabbitMq((context, cfg) =>
 				{
-					cfg.Host("localhost", "/", h =>
+					cfg.Host(settings.Host, settings.VirtualHost, h =>
 					{
-						h.Username("admin");
-						h.Password("admin123");
+						h.Username(settings.UserName);
+						h.Password(settings.Password);
 					});
 					cfg.ConfigureEndpoints(context);
 				});
-				//x.UsingInMemory((context, cfg) =>
-				//{
-				//	cfg.ConfigureEndpoints(context);
-				//});
 			});
 		}
 	}

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.RegisterConfigurations();
 builder.RegisterServices();
 builder.RegisterMassTransit();
 

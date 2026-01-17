@@ -15,11 +15,6 @@ namespace FCG.Notifications.Configuration
 			builder.Services.Configure<RabbitMqSettings>(rabbitMqConfigSection);
 		}
 
-		public static void RegisterServices(this HostApplicationBuilder builder)
-		{
-			
-		}
-
 		public static void RegisterMassTransit(this HostApplicationBuilder builder)
 		{
 			var settings = builder.Configuration.GetSection("RabbitMqSettings").Get<RabbitMqSettings>() 
@@ -31,13 +26,7 @@ namespace FCG.Notifications.Configuration
 				x.SetInMemorySagaRepositoryProvider();
 
 				x.AddConsumer<PaymentProcessedEventConsumer>();
-
-				//var entryAssembly = Assembly.GetEntryAssembly();
-
-				//x.AddConsumers(entryAssembly);
-				//x.AddSagaStateMachines(entryAssembly);
-				//x.AddSagas(entryAssembly);
-				//x.AddActivities(entryAssembly);
+				x.AddConsumer<UseCreatedEventConsumer>();
 
 				x.UsingRabbitMq((context, cfg) =>
 				{

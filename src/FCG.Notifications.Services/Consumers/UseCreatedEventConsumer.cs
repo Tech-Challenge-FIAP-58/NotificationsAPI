@@ -1,4 +1,4 @@
-﻿using FCG.Notifications.Domain.Events;
+﻿using FCG.Core.Messages.Integration;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 

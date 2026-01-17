@@ -11,14 +11,14 @@ namespace FCG.Notifications.Configuration
 	{
 		public static void RegisterConfigurations(this HostApplicationBuilder builder)
 		{
-			var rabbitMqConfigSection = builder.Configuration.GetSection("RabbitMqSettings");
+			var rabbitMqConfigSection = builder.Configuration.GetSection("RabbitMQ");
 			builder.Services.Configure<RabbitMqSettings>(rabbitMqConfigSection);
 		}
 
 		public static void RegisterMassTransit(this HostApplicationBuilder builder)
 		{
-			var settings = builder.Configuration.GetSection("RabbitMqSettings").Get<RabbitMqSettings>() 
-				?? throw new NullReferenceException("RabbitMqSettings configuration section is missing or invalid.");
+			var settings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMqSettings>() 
+				?? throw new NullReferenceException("RabbitMQ configuration section is missing or invalid.");
 
 			builder.Services.AddMassTransit(x =>
 			{

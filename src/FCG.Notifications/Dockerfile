@@ -1,27 +1,66 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# syntax=docker/dockerfile:1
 
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
+# =========================
+# Base (runtime)
+# =========================
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 
+# Se NÃO estiver usando APP_UID no compose/ambiente, deixe comentado
+# USER $APP_UID
 
-# This stage is used to build the service project
+
+# =========================
+# Build (restore + build)
+# =========================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FCG.Notifications/FCG.Notifications.csproj", "FCG.Notifications/"]
-RUN dotnet restore "./FCG.Notifications/FCG.Notifications.csproj"
-COPY . .
-WORKDIR "/src/FCG.Notifications"
-RUN dotnet build "./FCG.Notifications.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# -------------------------
+# Copia solução (se existir)
+# -------------------------
+# Remova esta linha se não houver .sln no projeto
+COPY FCG.Notifications.sln ./
+
+# -------------------------
+# Copia apenas o csproj (cache de restore)
+# -------------------------
+COPY src/FCG.Notifications/FCG.Notifications.csproj src/FCG.Notifications/
+
+# -------------------------
+# Restore
+# -------------------------
+RUN dotnet restore src/FCG.Notifications/FCG.Notifications.csproj
+
+# -------------------------
+# Copia o restante do código
+# -------------------------
+COPY . .
+
+# -------------------------
+# Build
+# -------------------------
+RUN dotnet build src/FCG.Notifications/FCG.Notifications.csproj \
+    -c $BUILD_CONFIGURATION \
+    -o /app/build
+
+
+# =========================
+# Publish
+# =========================
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./FCG.Notifications.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+RUN dotnet publish src/FCG.Notifications/FCG.Notifications.csproj \
+    -c $BUILD_CONFIGURATION \
+    -o /app/publish \
+    /p:UseAppHost=false
+
+
+# =========================
+# Final (runtime)
+# =========================
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

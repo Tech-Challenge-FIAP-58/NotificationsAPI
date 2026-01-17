@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FCG.Core\FCG.Core.csproj" />
     <ProjectReference Include="..\FCG.Notifications.Domain\FCG.Notifications.Domain.csproj" />
   </ItemGroup>
 

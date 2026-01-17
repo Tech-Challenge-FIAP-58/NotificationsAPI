@@ -30,7 +30,7 @@ namespace FCG.Notifications.Configuration
 				x.SetKebabCaseEndpointNameFormatter();
 				x.SetInMemorySagaRepositoryProvider();
 
-				x.AddConsumer<NotificationConsumer>();
+				x.AddConsumer<PaymentProcessedEventConsumer>();
 
 				//var entryAssembly = Assembly.GetEntryAssembly();
 

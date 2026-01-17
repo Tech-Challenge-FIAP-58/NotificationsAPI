@@ -1,4 +1,4 @@
-﻿using FCG.Notifications.Domain.Events;
+﻿using FCG.Core.Messages.Integration;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -8,7 +8,7 @@ namespace FCG.Notifications.Services.Consumers
 	{
 		public Task Consume(ConsumeContext<PaymentProcessedEvent> context)
 		{
-			if (context.Message.Success)
+			if (context.Message.Status == PaymentResultStatus.Approved)
 			{
 				logger.LogInformation("Payment Processed Event: Payment ID: {PaymentId} processed successfully with Amount: {Amount}", context.Message.PaymentId, context.Message.Amount);
 			}

@@ -1,4 +1,4 @@
-﻿using FCG.Core.Messages.Integration;
+﻿using FCG.Core.Integration;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 

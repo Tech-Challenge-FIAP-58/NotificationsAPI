@@ -1,4 +1,4 @@
-using FCG.Core.Messages.Integration;
+using FCG.Core.Integration;
 using FCG.Notifications.Services.Consumers;
 using FluentAssertions;
 using MassTransit;
@@ -21,10 +21,13 @@ public class PaymentProcessedEventConsumerTests
 	[Fact]
 	public async Task Consume_WhenPaymentIsApproved_ShouldLogInformation()
 	{
-		// Arrange
-		var paymentEvent = new PaymentProcessedEvent(
-			orderId: 123,
-			paymentId: 456,
+		var paymentId = Guid.NewGuid();
+		var orderId = Guid.NewGuid();
+
+        // Arrange
+        var paymentEvent = new PaymentProcessedEvent(
+			orderId: orderId,
+			paymentId: paymentId,
 			amount: 100.50m,
 			status: PaymentResultStatus.Approved
 		);
@@ -40,7 +43,7 @@ public class PaymentProcessedEventConsumerTests
 			x => x.Log(
 				LogLevel.Information,
 				It.IsAny<EventId>(),
-				It.Is<It.IsAnyType>((o, t) => o.ToString()!.Contains("Payment ID: 456") && o.ToString()!.Contains("Amount: 100.5")),
+				It.Is<It.IsAnyType>((o, t) => o.ToString()!.Contains($"Payment ID: {paymentId}") && o.ToString()!.Contains("Amount: 100.5")),
 				It.IsAny<Exception>(),
 				It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
 			Times.Once);
@@ -49,10 +52,12 @@ public class PaymentProcessedEventConsumerTests
 	[Fact]
 	public async Task Consume_WhenPaymentIsDenied_ShouldLogWarning()
 	{
-		// Arrange
-		var paymentEvent = new PaymentProcessedEvent(
-			orderId: 123,
-			paymentId: 789,
+        var paymentId = Guid.NewGuid();
+		var orderId = Guid.NewGuid();
+        // Arrange
+        var paymentEvent = new PaymentProcessedEvent(
+			orderId: orderId,
+			paymentId: paymentId,
 			amount: 250.75m,
 			status: PaymentResultStatus.Denied,
 			reason: "Insufficient funds"
@@ -69,7 +74,7 @@ public class PaymentProcessedEventConsumerTests
 			x => x.Log(
 				LogLevel.Warning,
 				It.IsAny<EventId>(),
-				It.Is<It.IsAnyType>((o, t) => o.ToString()!.Contains("Payment ID: 789") && o.ToString()!.Contains("failed to process")),
+				It.Is<It.IsAnyType>((o, t) => o.ToString()!.Contains($"Payment ID: {paymentId}") && o.ToString()!.Contains("failed to process")),
 				It.IsAny<Exception>(),
 				It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
 			Times.Once);
@@ -78,10 +83,13 @@ public class PaymentProcessedEventConsumerTests
 	[Fact]
 	public async Task Consume_WhenPaymentIsApproved_ShouldNotLogWarning()
 	{
-		// Arrange
-		var paymentEvent = new PaymentProcessedEvent(
-			orderId: 100,
-			paymentId: 200,
+        var paymentId = Guid.NewGuid();
+		var orderId = Guid.NewGuid();
+
+        // Arrange
+        var paymentEvent = new PaymentProcessedEvent(
+			orderId: orderId,
+			paymentId: paymentId,
 			amount: 50.00m,
 			status: PaymentResultStatus.Approved
 		);
@@ -106,10 +114,12 @@ public class PaymentProcessedEventConsumerTests
 	[Fact]
 	public async Task Consume_ShouldCompleteSuccessfully()
 	{
-		// Arrange
-		var paymentEvent = new PaymentProcessedEvent(
-			orderId: 1,
-			paymentId: 2,
+        var paymentId = Guid.NewGuid();
+		var orderId = Guid.NewGuid();
+        // Arrange
+        var paymentEvent = new PaymentProcessedEvent(
+			orderId: orderId,
+			paymentId: paymentId,
 			amount: 99.99m,
 			status: PaymentResultStatus.Approved
 		);
@@ -129,10 +139,13 @@ public class PaymentProcessedEventConsumerTests
 	[InlineData(PaymentResultStatus.Denied, LogLevel.Warning)]
 	public async Task Consume_ShouldLogCorrectLevelBasedOnStatus(PaymentResultStatus status, LogLevel expectedLogLevel)
 	{
-		// Arrange
-		var paymentEvent = new PaymentProcessedEvent(
-			orderId: 555,
-			paymentId: 666,
+        var paymentId = Guid.NewGuid();
+		var orderId = Guid.NewGuid();
+
+        // Arrange
+        var paymentEvent = new PaymentProcessedEvent(
+			orderId: orderId,
+			paymentId: paymentId,
 			amount: 150.00m,
 			status: status
 		);

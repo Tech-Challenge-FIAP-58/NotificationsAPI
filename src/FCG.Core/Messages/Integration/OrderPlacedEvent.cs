@@ -1,6 +1,6 @@
-﻿namespace FCG.Core.Messages.Integration;
+﻿namespace FCG.Core.Integration;
 
-public class OrderPlacedEvent : IntegrationEvent
+public class OrderPlacedEvent
 {
     public int ClientId { get; set; }
     public int OrderId { get; set; }

@@ -6,7 +6,7 @@
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
 WORKDIR /app
 
-# Se NÃO estiver usando APP_UID no compose/ambiente, deixe comentado
+# Se Nï¿½O estiver usando APP_UID no compose/ambiente, deixe comentado
 # USER $APP_UID
 
 
@@ -18,15 +18,18 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # -------------------------
-# Copia solução (se existir)
+# Copia soluï¿½ï¿½o (se existir)
 # -------------------------
-# Remova esta linha se não houver .sln no projeto
+# Remova esta linha se nï¿½o houver .sln no projeto
 COPY FCG.Notifications.sln ./
 
 # -------------------------
 # Copia apenas o csproj (cache de restore)
 # -------------------------
 COPY src/FCG.Notifications/FCG.Notifications.csproj src/FCG.Notifications/
+COPY src/FCG.Notifications.Domain/FCG.Notifications.Domain.csproj src/FCG.Notifications.Domain/
+COPY src/FCG.Notifications.Services/FCG.Notifications.Services.csproj src/FCG.Notifications.Services/
+COPY src/FCG.Core/FCG.Core.csproj src/FCG.Core/
 
 # -------------------------
 # Restore
@@ -34,7 +37,7 @@ COPY src/FCG.Notifications/FCG.Notifications.csproj src/FCG.Notifications/
 RUN dotnet restore src/FCG.Notifications/FCG.Notifications.csproj
 
 # -------------------------
-# Copia o restante do código
+# Copia o restante do cï¿½digo
 # -------------------------
 COPY . .
 

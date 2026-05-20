@@ -30,10 +30,12 @@ namespace FCG.Notifications.Configuration
 
 				x.UsingRabbitMq((context, cfg) =>
 				{
-					cfg.Host(settings.Host, settings.VirtualHost, h =>
+					cfg.Host(settings.Host, (ushort)settings.Port, settings.VirtualHost, h =>
 					{
 						h.Username(settings.UserName);
 						h.Password(settings.Password);
+						if (settings.UseSsl)
+							h.UseSsl(ssl => ssl.Protocol = System.Security.Authentication.SslProtocols.Tls12);
 					});
 					cfg.ConfigureEndpoints(context);
 				});

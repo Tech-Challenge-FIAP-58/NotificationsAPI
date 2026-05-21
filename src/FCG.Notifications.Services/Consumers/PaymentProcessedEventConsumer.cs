@@ -1,21 +1,16 @@
 ﻿using FCG.Core.Integration;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text;
-using System.Transactions;
 using Newtonsoft.Json;
 
 namespace FCG.Notifications.Services.Consumers
 {
-    public class PaymentProcessedEventConsumer(ILogger<PaymentProcessedEventConsumer> logger) : IConsumer<PaymentProcessedEvent>
+    public class PaymentProcessedEventConsumer(
+        ILogger<PaymentProcessedEventConsumer> logger,
+        IConfiguration configuration) : IConsumer<PaymentProcessedEvent>
     {
-        // pedretti
-        private static readonly HttpClient _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri("http://localhost:8000")
-        };
-        // fim pedretti
-
         public async Task Consume(ConsumeContext<PaymentProcessedEvent> context)
         {
             EmailAEnviar envio = new EmailAEnviar();
@@ -33,23 +28,26 @@ namespace FCG.Notifications.Services.Consumers
                 envio.corpo = "Infelizmente tivemos um problema no seu pagamento referente ao pedido " + context.Message.OrderId.ToString() + ". Tente novamente mais tarde.";
             }
 
-            // pedretti
-            // faltou passar o email no objeto que trafega nas filas
             envio.destinatario = "teste@teste.com.br";
 
-            // pedretti
-            var json = JsonConvert.SerializeObject(envio);
+            var notificationsUrl = configuration["Notifications__CallbackUrl"]
+                                ?? configuration["Notifications:CallbackUrl"];
 
+            if (string.IsNullOrWhiteSpace(notificationsUrl))
+            {
+                logger.LogInformation("[SIMULADO] Email enviado. Para: {Destinatario}, Assunto: {Assunto}", envio.destinatario, envio.assunto);
+                return;
+            }
+
+            var json = JsonConvert.SerializeObject(envio);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("/notifications", content);
-
+            using var httpClient = new HttpClient { BaseAddress = new Uri(notificationsUrl) };
+            var response = await httpClient.PostAsync("/notifications", content);
             response.EnsureSuccessStatusCode();
 
             var body = await response.Content.ReadAsStringAsync();
-
             logger.LogInformation("Resposta da Lambda: {Response}", body);
-            // fim pedretti
         }
     }
 }

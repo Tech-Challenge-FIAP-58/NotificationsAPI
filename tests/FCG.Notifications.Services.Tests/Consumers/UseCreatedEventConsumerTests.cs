@@ -1,3 +1,6 @@
+using System.Net;
+using System.Net.Http;
+using Moq.Protected;
 using FCG.Core.Messages.Integration;
 using FCG.Notifications.Services.Consumers;
 using FluentAssertions;
@@ -11,11 +14,31 @@ public class UseCreatedEventConsumerTests
 {
 	private readonly Mock<ILogger<UseCreatedEventConsumer>> _loggerMock;
 	private readonly UseCreatedEventConsumer _consumer;
+	private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
 
 	public UseCreatedEventConsumerTests()
 	{
 		_loggerMock = new Mock<ILogger<UseCreatedEventConsumer>>();
-		_consumer = new UseCreatedEventConsumer(_loggerMock.Object);
+
+		_httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>(
+				"SendAsync",
+				ItExpr.IsAny<HttpRequestMessage>(),
+				ItExpr.IsAny<CancellationToken>()
+			)
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.OK,
+				Content = new StringContent("Success")
+			});
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri("http://localhost:8000")
+		};
+
+		_consumer = new UseCreatedEventConsumer(_loggerMock.Object, httpClient);
 	}
 
 	[Fact]

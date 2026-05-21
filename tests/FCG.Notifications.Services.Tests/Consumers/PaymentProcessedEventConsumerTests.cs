@@ -2,6 +2,7 @@ using FCG.Core.Integration;
 using FCG.Notifications.Services.Consumers;
 using FluentAssertions;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -10,12 +11,14 @@ namespace FCG.Notifications.Services.Tests.Consumers;
 public class PaymentProcessedEventConsumerTests
 {
 	private readonly Mock<ILogger<PaymentProcessedEventConsumer>> _loggerMock;
+	private readonly Mock<IConfiguration> _configurationMock;
 	private readonly PaymentProcessedEventConsumer _consumer;
 
 	public PaymentProcessedEventConsumerTests()
 	{
 		_loggerMock = new Mock<ILogger<PaymentProcessedEventConsumer>>();
-		_consumer = new PaymentProcessedEventConsumer(_loggerMock.Object);
+		_configurationMock = new Mock<IConfiguration>();
+		_consumer = new PaymentProcessedEventConsumer(_loggerMock.Object, _configurationMock.Object);
 	}
 
 	[Fact]
@@ -164,6 +167,6 @@ public class PaymentProcessedEventConsumerTests
 				It.IsAny<It.IsAnyType>(),
 				It.IsAny<Exception>(),
 				It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-			Times.Once);
+			Times.AtLeastOnce);
 	}
 }

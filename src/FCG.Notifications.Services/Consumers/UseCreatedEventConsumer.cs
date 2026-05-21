@@ -6,14 +6,9 @@ using System.Text;
 
 namespace FCG.Notifications.Services.Consumers
 {
-    public class UseCreatedEventConsumer(ILogger<UseCreatedEventConsumer> logger) : IConsumer<UserCreatedEvent>
+    public class UseCreatedEventConsumer(ILogger<UseCreatedEventConsumer> logger, HttpClient httpClient) : IConsumer<UserCreatedEvent>
     {
-        // pedretti
-        private static readonly HttpClient _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri("http://localhost:8000")
-        };
-        // fim pedretti
+        private readonly HttpClient _httpClient = httpClient;
 
         public async Task Consume(ConsumeContext<UserCreatedEvent> context)
         {

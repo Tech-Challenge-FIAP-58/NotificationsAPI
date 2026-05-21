@@ -33,6 +33,9 @@ COPY FCG.Notifications.sln ./
 # Copia apenas o csproj (cache de restore)
 # -------------------------
 COPY src/FCG.Notifications/FCG.Notifications.csproj src/FCG.Notifications/
+COPY src/FCG.Notifications.Domain/FCG.Notifications.Domain.csproj src/FCG.Notifications.Domain/
+COPY src/FCG.Notifications.Services/FCG.Notifications.Services.csproj src/FCG.Notifications.Services/
+COPY src/FCG.Core/FCG.Core.csproj src/FCG.Core/
 
 # -------------------------
 # Restore
